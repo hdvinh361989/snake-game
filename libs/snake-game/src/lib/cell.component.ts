@@ -2,7 +2,7 @@ import { css, LitElement, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators';
 import { DF_SNAKE_SKIN, SnakeSkin } from './snake.model';
 
-enum Type {
+export enum Type {
   Ground = 1,
   Snake,
   Bait,
@@ -28,7 +28,7 @@ export class CellComponent extends LitElement {
   snakeSkin: SnakeSkin = DF_SNAKE_SKIN;
 
   @property()
-  isSnakeHead = false;
+  isSnakeHead?: boolean;
 
   protected override updated(_changedProperties: PropertyValues) {
     super.updated(_changedProperties);
@@ -56,5 +56,10 @@ export class CellComponent extends LitElement {
       default:
         break;
     }
+  }
+}
+declare global {
+  interface HTMLElementTagNameMap {
+    cell: CellComponent;
   }
 }
