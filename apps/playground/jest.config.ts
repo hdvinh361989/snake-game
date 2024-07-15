@@ -1,9 +1,9 @@
 /* eslint-disable */
 export default {
-  displayName: 'snake-game',
+  displayName: 'playground',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../coverage/apps/snake-game',
+  coverageDirectory: '../../coverage/apps/playground',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',
