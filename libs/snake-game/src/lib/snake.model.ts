@@ -1,9 +1,10 @@
 const DF_LENGTH = 3;
 const STARTING_POSITION = { x: 0, y: 0 };
-enum SKIN {
-  Red = 1,
-  Blue,
+export enum SnakeSkin {
+  Red = 'red',
+  Blue = 'blue',
 }
+export const DF_SNAKE_SKIN = SnakeSkin.Red;
 enum Direction {
   Top = 1,
   Bottom,
@@ -15,7 +16,7 @@ export class Snake {
   body: Array<{ x: number; y: number }> = new Array(DF_LENGTH).fill({
     ...STARTING_POSITION,
   });
-  skin = SKIN.Red;
+  skin = DF_SNAKE_SKIN;
   direction = Direction.Bottom;
 
   get headPosition() {
