@@ -1,0 +1,26 @@
+{
+  "name": "snake-game",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/snake-game/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/snake-game",
+        "main": "libs/snake-game/src/index.ts",
+        "tsConfig": "libs/snake-game/tsconfig.lib.json",
+        "assets": ["libs/snake-game/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/snake-game/jest.config.ts"
+      }
+    }
+  }
+}
