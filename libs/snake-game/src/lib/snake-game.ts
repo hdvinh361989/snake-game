@@ -12,6 +12,15 @@ enum Stage {
   End,
 }
 
+interface Cell {
+  id: string;
+  type: Type;
+  x: number;
+  y: number;
+  snakeSkin?: SnakeSkin;
+  isSnakeHead?: boolean;
+}
+
 @customElement('snake-game')
 export class SnakeGame extends LitElement {
   static override styles = css`
@@ -25,16 +34,7 @@ export class SnakeGame extends LitElement {
   @state()
   private _stage: Stage = Stage.Idle;
   @state()
-  private _matrix?: Array<
-    Array<{
-      id: string;
-      type: Type;
-      x: number;
-      y: number;
-      snakeSkin?: SnakeSkin;
-      isSnakeHead?: boolean;
-    }>
-  >;
+  private _cells?: Array<Array<Cell>>;
   private _snake?: Snake;
   private _bait?: Bait;
   private _result?: 'Win' | 'Lose';
@@ -53,7 +53,7 @@ export class SnakeGame extends LitElement {
   }
 
   protected override render() {
-    if (!this._matrix || this._matrix.length <= 0) return html``;
+    if (!this._cells || this._cells.length <= 0) return html``;
 
     return html`
       ${choose(this._stage, [
@@ -81,7 +81,7 @@ export class SnakeGame extends LitElement {
       ${new Array(this.dimension.height).fill(0).map(
         (v, rowIndex) => html`
           <div class="row">
-            ${this._matrix?.map((column) => {
+            ${this._cells?.map((column) => {
               const { type, snakeSkin, isSnakeHead } = column[rowIndex];
               return html`
                 <cell
@@ -101,20 +101,34 @@ export class SnakeGame extends LitElement {
     this._stage = Stage.Started;
     this._snake = new Snake();
     this._result = void 0;
-    this._matrix = this._createNewMatrix();
+    this._cells = this._createNewCells();
     this._bait = this._createNewBait();
   }
 
   private _createNewBait() {
-    if (!this._matrix || this._matrix.length <= 0) return void 0;
-    let flattenedMatrix = this._matrix?.flat(1);
-    // Remove first cell
-    flattenedMatrix = flattenedMatrix.slice(1);
+    if (!this._cells || this._cells.length <= 0) return void 0;
+
+    let flattenedMatrix = this._cells?.flat(1);
+
+    // Exclude snake cells and bait cells
+    let usedPositions: Array<{ x: number; y: number }> = [];
+    if (this._snake) {
+      usedPositions = [...this._snake.body];
+    }
+
+    if (this._bait) {
+      usedPositions = [...usedPositions, this._bait.position];
+    }
+
+    const usedIds = usedPositions.map(({ x, y }) => `${x}-${y}`);
+    flattenedMatrix = flattenedMatrix.filter(
+      (cell) => !usedIds.includes(cell.id)
+    );
     const { x, y } = getRandomItem(flattenedMatrix);
     return new Bait({ x, y });
   }
 
-  private _createNewMatrix() {
+  private _createNewCells(): Array<Array<Cell>> {
     const { width, height } = this.dimension;
     return new Array(width).fill(0).map((v, colIdx) =>
       new Array(height).fill(0).map((v, rowIdx) => ({
@@ -128,10 +142,44 @@ export class SnakeGame extends LitElement {
 
   private run() {
     this.stop();
-    this.intervalId = setInterval(() => {}, 1000);
+    this._update();
+    this.intervalId = setInterval(
+      () => this._update(),
+      1000
+    ) as unknown as number;
   }
 
   private stop() {
     this.intervalId && clearInterval(this.intervalId);
+  }
+
+  private _update() {
+    if (!this._snake) return;
+
+    if (!this._bait || !this._snake.isEatable(this._bait)) {
+      this._snake.move();
+    } else {
+      const newBait = this._createNewBait();
+      this._snake.eat(this._bait.nutrition);
+      this._bait = newBait;
+    }
+
+    const cells = this._createNewCells();
+    // Update snake cells
+    this._snake.body.forEach(
+      ({ x, y }, idx, list) =>
+        (cells[x][y] = {
+          ...cells[x][y],
+          type: Type.Snake,
+          isSnakeHead: idx === list.length - 1,
+          snakeSkin: this._snake?.skin,
+        })
+    );
+    // Update bait cell (if any)
+    if (this._bait) {
+      const { position } = this._bait;
+      const { x, y } = position;
+      cells[x][y] = { ...cells[x][y], type: Type.Bait };
+    }
   }
 }
