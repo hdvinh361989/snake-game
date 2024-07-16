@@ -1,1 +1,10 @@
-<snake-game [dimension]="{ width: 10, height: 10 }"></snake-game>
+<!--Control bar-->
+<section [formGroup]="form">
+  <input type="number" formControlName="width" />
+  <input type="number" formControlName="height" />
+  <button type="button" (click)="submit()">Submit</button>
+</section>
+
+<section id="game-container">
+  <snake-game [dimension]="submitted"></snake-game>
+</section>
