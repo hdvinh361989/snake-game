@@ -1,10 +1,12 @@
-import { customElement, property, state } from 'lit/decorators';
-import { choose } from 'lit/directives/choose';
+import { customElement, property, state } from 'lit/decorators.js';
+import { choose } from 'lit/directives/choose.js';
 import { css, html, LitElement } from 'lit';
-import { Snake, SnakeSkin } from './snake.model';
+import './cell.component';
 import { Type } from './cell.component';
+import { Snake, SnakeSkin } from './snake.model';
 import { Bait } from './bait.model';
 import { getRandomItem } from './common';
+import { Direction } from './constant';
 
 enum Stage {
   Idle = 1,
@@ -25,11 +27,26 @@ interface Cell {
 export class SnakeGame extends LitElement {
   static override styles = css`
     :host {
+      display: block;
+    }
+
+    h1 {
+      cursor: pointer;
+    }
+
+    .row {
+      display: flex;
+    }
+
+    display-cell {
+      outline: black 1px solid;
     }
   `;
 
   @property()
   dimension!: { width: number; height: number };
+  @property()
+  speed = 250;
 
   @state()
   private _stage: Stage = Stage.Idle;
@@ -53,8 +70,6 @@ export class SnakeGame extends LitElement {
   }
 
   protected override render() {
-    if (!this._cells || this._cells.length <= 0) return html``;
-
     return html`
       ${choose(this._stage, [
         [Stage.Idle, () => this._getIdleTemplate()],
@@ -73,7 +88,7 @@ export class SnakeGame extends LitElement {
   }
 
   private _getEndTemplate() {
-    return html`<h1 @click="${this.start}"></h1>`;
+    return html`<h1 @click="${this.start}">${this._result}</h1>`;
   }
 
   private _getRows() {
@@ -84,11 +99,11 @@ export class SnakeGame extends LitElement {
             ${this._cells?.map((column) => {
               const { type, snakeSkin, isSnakeHead } = column[rowIndex];
               return html`
-                <cell
+                <display-cell
                   .type="${type}"
                   .snakeSkin="${snakeSkin}"
                   .isSnakeHead="${isSnakeHead}"
-                ></cell>
+                ></display-cell>
               `;
             })}
           </div>
@@ -99,10 +114,11 @@ export class SnakeGame extends LitElement {
 
   start() {
     this._stage = Stage.Started;
-    this._snake = new Snake();
+    this._snake = new Snake(this.dimension);
     this._result = void 0;
     this._cells = this._createNewCells();
     this._bait = this._createNewBait();
+    this.run();
   }
 
   private _createNewBait() {
@@ -143,14 +159,43 @@ export class SnakeGame extends LitElement {
   private run() {
     this.stop();
     this._update();
+
+    // Set update interval
     this.intervalId = setInterval(
       () => this._update(),
-      1000
+      this.speed
     ) as unknown as number;
+
+    // Listen for arrow key to change direction
+    window.addEventListener('keydown', this._onKeyDown);
   }
+
+  private _onKeyDown = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowUp': {
+        this._snake?.changeDirection(Direction.Up);
+        break;
+      }
+      case 'ArrowDown': {
+        this._snake?.changeDirection(Direction.Down);
+        break;
+      }
+      case 'ArrowLeft': {
+        this._snake?.changeDirection(Direction.Left);
+        break;
+      }
+      case 'ArrowRight': {
+        this._snake?.changeDirection(Direction.Right);
+        break;
+      }
+      default:
+        break;
+    }
+  };
 
   private stop() {
     this.intervalId && clearInterval(this.intervalId);
+    window.removeEventListener('keydown', this._onKeyDown);
   }
 
   private _update() {
@@ -164,12 +209,19 @@ export class SnakeGame extends LitElement {
       this._bait = newBait;
     }
 
-    const cells = this._createNewCells();
+    // Lose: If the snake bit him self and hit the
+    if (this._snake.isBitten || this._snake.isHitTheWall) {
+      this._result = 'Lose';
+      this._stage = Stage.End;
+      return;
+    }
+
+    const newCells = this._createNewCells();
     // Update snake cells
     this._snake.body.forEach(
       ({ x, y }, idx, list) =>
-        (cells[x][y] = {
-          ...cells[x][y],
+        (newCells[x][y] = {
+          ...newCells[x][y],
           type: Type.Snake,
           isSnakeHead: idx === list.length - 1,
           snakeSkin: this._snake?.skin,
@@ -179,7 +231,22 @@ export class SnakeGame extends LitElement {
     if (this._bait) {
       const { position } = this._bait;
       const { x, y } = position;
-      cells[x][y] = { ...cells[x][y], type: Type.Bait };
+      newCells[x][y] = { ...newCells[x][y], type: Type.Bait };
     }
+
+    // Update cells
+    this._cells = newCells;
+
+    // Win: The snake fill all cells
+    const flattenCells = newCells.flat(1);
+    if (!flattenCells.find((cell) => cell.type === Type.Ground)) {
+      this._result = 'Win';
+      this._stage = Stage.End;
+    }
+  }
+}
+declare global {
+  interface HTMLElementTagNameMap {
+    'snake-game': SnakeGame;
   }
 }

@@ -1,5 +1,5 @@
 import { css, LitElement, PropertyValues } from 'lit';
-import { customElement, property } from 'lit/decorators';
+import { customElement, property } from 'lit/decorators.js';
 import { DF_SNAKE_SKIN, SnakeSkin } from './snake.model';
 
 export enum Type {
@@ -9,7 +9,7 @@ export enum Type {
 }
 const DF_BAIT_COLOR = 'yellow';
 
-@customElement('cell')
+@customElement('display-cell')
 export class CellComponent extends LitElement {
   static override styles = css`
     :host {
@@ -60,6 +60,6 @@ export class CellComponent extends LitElement {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    cell: CellComponent;
+    'display-cell': CellComponent;
   }
 }

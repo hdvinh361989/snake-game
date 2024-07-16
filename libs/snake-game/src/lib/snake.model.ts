@@ -1,4 +1,5 @@
 import { Bait } from './bait.model';
+import { Direction } from './constant';
 
 const DF_LENGTH = 3;
 const STARTING_POSITION = { x: 0, y: 0 };
@@ -7,25 +8,21 @@ export enum SnakeSkin {
   Blue = 'blue',
 }
 export const DF_SNAKE_SKIN = SnakeSkin.Red;
-enum Direction {
-  Top = 1,
-  Bottom,
-  Left = 5,
-  Right,
-}
 
 export class Snake {
   body: Array<{ x: number; y: number }> = new Array(DF_LENGTH).fill({
     ...STARTING_POSITION,
   });
   skin = DF_SNAKE_SKIN;
-  direction = Direction.Bottom;
+  playgroundDimension!: { width: number; height: number };
+
+  private _direction = Direction.Down;
 
   get headPosition() {
     return this.body[this.body.length - 1];
   }
 
-  get isDead() {
+  get isBitten() {
     return !!this.body
       .slice(0, this.body.length - 1)
       .find(
@@ -33,14 +30,24 @@ export class Snake {
       );
   }
 
+  get isHitTheWall(): boolean {
+    const { x, y } = this.headPosition;
+    const { width, height } = this.playgroundDimension;
+    return x < 0 || x >= width || y < 0 || y >= height;
+  }
+
+  constructor(playgroundDimension: { width: number; height: number }) {
+    this.playgroundDimension = playgroundDimension;
+  }
+
   changeDirection(direction: Direction) {
     if (
-      this.direction === direction ||
-      this.direction + 1 === direction ||
-      this.direction - 1 === direction
+      this._direction === direction ||
+      this._direction + 1 === direction ||
+      this._direction - 1 === direction
     )
       return;
-    this.direction = direction;
+    this._direction = direction;
   }
 
   eat(nutrition: number) {
@@ -60,14 +67,14 @@ export class Snake {
 
   getNextHeadPosition(distance = 1) {
     const currentHeadPosition = this.headPosition;
-    switch (this.direction) {
-      case Direction.Top: {
+    switch (this._direction) {
+      case Direction.Up: {
         return {
           x: currentHeadPosition.x,
           y: currentHeadPosition.y - distance,
         };
       }
-      case Direction.Bottom: {
+      case Direction.Down: {
         return {
           x: currentHeadPosition.x,
           y: currentHeadPosition.y + distance,
