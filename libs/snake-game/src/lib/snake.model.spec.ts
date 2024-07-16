@@ -10,9 +10,11 @@ const MOCK_BODY = [
 ];
 
 describe('Test snake: move', () => {
-  const snake = new Snake({ width: 10, height: 10 });
-  snake.body = MOCK_BODY.slice(0, 3);
-  snake.changeDirection(Direction.Down);
+  const snake = new Snake(
+    { width: 10, height: 10 },
+    Direction.Down,
+    MOCK_BODY.slice(0, 3)
+  );
 
   it('Move down', () => {
     const target = { x: 0, y: 3 };
@@ -23,9 +25,11 @@ describe('Test snake: move', () => {
 });
 
 describe('Test snake: eat', () => {
-  const snake = new Snake({ width: 10, height: 10 });
-  snake.body = MOCK_BODY.slice(0, 3);
-  snake.changeDirection(Direction.Down);
+  const snake = new Snake(
+    { width: 10, height: 10 },
+    Direction.Down,
+    MOCK_BODY.slice(0, 3)
+  );
 
   it('Eat', () => {
     const target = { x: 0, y: 3 };
@@ -40,8 +44,7 @@ describe('Test snake: eat', () => {
 describe('Test snake: bite', () => {
   let snake: Snake;
   beforeEach(() => {
-    snake = new Snake({ width: 10, height: 10 });
-    snake.body = [...MOCK_BODY];
+    snake = new Snake({ width: 10, height: 10 }, Direction.Up, [...MOCK_BODY]);
   });
 
   it(`Turn left should bite itself`, () => {
@@ -59,10 +62,11 @@ describe('Test snake: bite', () => {
   it(`Turn up should not bite itself`, () => {
     snake.changeDirection(Direction.Up);
     snake.move();
+
     expect(snake.isBitten).toBe(false);
   });
 
-  it(`Turn bottom should not bite itself`, () => {
+  it(`Turn down should not bite itself`, () => {
     snake.changeDirection(Direction.Down);
     snake.move();
     expect(snake.isBitten).toBe(false);
@@ -72,8 +76,11 @@ describe('Test snake: bite', () => {
 describe('Test snake: hit the boundary', () => {
   let snake: Snake;
   beforeEach(() => {
-    snake = new Snake({ width: 10, height: 10 });
-    snake.body = MOCK_BODY.slice(0, 3);
+    snake = new Snake(
+      { width: 10, height: 10 },
+      Direction.Down,
+      MOCK_BODY.slice(0, 3)
+    );
   });
 
   it(`Turn left should hit the boundary`, () => {

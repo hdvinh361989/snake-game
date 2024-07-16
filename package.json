@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "serve": "nx run playground:serve",
-    "test": "nx run playground:test"
+    "test": "nx run snake-game:test"
   },
   "private": true,
   "dependencies": {

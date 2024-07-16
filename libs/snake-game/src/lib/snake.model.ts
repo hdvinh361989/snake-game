@@ -9,13 +9,11 @@ export enum SnakeSkin {
 }
 
 export class Snake {
-  body: Array<{ x: number; y: number }> = new Array(DF_LENGTH).fill({
-    ...STARTING_POSITION,
-  });
+  body: Array<{ x: number; y: number }>;
   skin = SnakeSkin.Red;
   playgroundDimension!: { width: number; height: number };
 
-  private _direction = Direction.Down;
+  private _direction: Direction;
 
   get headPosition() {
     return this.body[this.body.length - 1];
@@ -35,8 +33,18 @@ export class Snake {
     return x < 0 || x >= width || y < 0 || y >= height;
   }
 
-  constructor(playgroundDimension: { width: number; height: number }) {
+  constructor(
+    playgroundDimension: { width: number; height: number },
+    direction?: Direction,
+    body?: Array<{ x: number; y: number }>
+  ) {
     this.playgroundDimension = playgroundDimension;
+    this._direction = direction ? direction : Direction.Down;
+    this.body = body
+      ? body
+      : new Array(DF_LENGTH).fill({
+          ...STARTING_POSITION,
+        });
   }
 
   changeDirection(direction: Direction): boolean {
