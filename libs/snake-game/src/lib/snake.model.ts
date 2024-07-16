@@ -7,13 +7,12 @@ export enum SnakeSkin {
   Red = 'red',
   Blue = 'blue',
 }
-export const DF_SNAKE_SKIN = SnakeSkin.Red;
 
 export class Snake {
   body: Array<{ x: number; y: number }> = new Array(DF_LENGTH).fill({
     ...STARTING_POSITION,
   });
-  skin = DF_SNAKE_SKIN;
+  skin = SnakeSkin.Red;
   playgroundDimension!: { width: number; height: number };
 
   private _direction = Direction.Down;

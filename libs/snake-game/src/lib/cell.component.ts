@@ -1,13 +1,11 @@
 import { css, LitElement, PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { DF_SNAKE_SKIN, SnakeSkin } from './snake.model';
 
 export enum Type {
   Ground = 1,
   Snake,
   Bait,
 }
-const DF_BAIT_COLOR = 'yellow';
 
 @customElement('display-cell')
 export class CellComponent extends LitElement {
@@ -25,7 +23,7 @@ export class CellComponent extends LitElement {
   type: Type = Type.Ground;
 
   @property()
-  snakeSkin: SnakeSkin = DF_SNAKE_SKIN;
+  skin?: string;
 
   @property()
   isSnakeHead?: boolean;
@@ -43,14 +41,14 @@ export class CellComponent extends LitElement {
     // Set styles
     switch (this.type) {
       case Type.Snake: {
-        this.style.backgroundColor = this.snakeSkin;
+        this.style.backgroundColor = this.skin ?? '';
         if (!this.isSnakeHead) {
           this.style.opacity = '0.5';
         }
         break;
       }
       case Type.Bait: {
-        this.style.backgroundColor = DF_BAIT_COLOR;
+        this.style.backgroundColor = this.skin ?? '';
         break;
       }
       default:

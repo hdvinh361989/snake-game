@@ -3,7 +3,7 @@ import { choose } from 'lit/directives/choose.js';
 import { css, html, LitElement } from 'lit';
 import './cell.component';
 import { Type } from './cell.component';
-import { Snake, SnakeSkin } from './snake.model';
+import { Snake } from './snake.model';
 import { Bait } from './bait.model';
 import { getRandomItem } from './common';
 import { Direction } from './constant';
@@ -19,7 +19,7 @@ interface Cell {
   type: Type;
   x: number;
   y: number;
-  snakeSkin?: SnakeSkin;
+  skin?: string;
   isSnakeHead?: boolean;
 }
 
@@ -99,11 +99,11 @@ export class SnakeGame extends LitElement {
         (v, rowIndex) => html`
           <div class="row">
             ${this._cells?.map((column) => {
-              const { type, snakeSkin, isSnakeHead } = column[rowIndex];
+              const { type, skin, isSnakeHead } = column[rowIndex];
               return html`
                 <display-cell
                   .type="${type}"
-                  .snakeSkin="${snakeSkin}"
+                  .skin="${skin}"
                   .isSnakeHead="${isSnakeHead}"
                 ></display-cell>
               `;
@@ -231,14 +231,18 @@ export class SnakeGame extends LitElement {
           ...newCells[x][y],
           type: Type.Snake,
           isSnakeHead: idx === list.length - 1,
-          snakeSkin: this._snake?.skin,
+          skin: this._snake?.skin,
         })
     );
     // Update bait cell (if any)
     if (this._bait) {
       const { position } = this._bait;
       const { x, y } = position;
-      newCells[x][y] = { ...newCells[x][y], type: Type.Bait };
+      newCells[x][y] = {
+        ...newCells[x][y],
+        type: Type.Bait,
+        skin: this._bait.skin,
+      };
     }
 
     // Update cells
