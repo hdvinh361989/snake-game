@@ -7,10 +7,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { CommonModule, JsonPipe } from '@angular/common';
 
 @Component({
   standalone: true,
-  imports: [RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, JsonPipe],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -18,13 +19,13 @@ import {
 })
 export class AppComponent implements OnInit {
   form = new FormGroup({
-    width: new FormControl(5, {
+    width: new FormControl(10, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(3)],
+      validators: [Validators.required, Validators.min(10)],
     }),
-    height: new FormControl(5, {
+    height: new FormControl(10, {
       nonNullable: true,
-      validators: [Validators.required, Validators.min(3)],
+      validators: [Validators.required, Validators.min(10)],
     }),
   });
 

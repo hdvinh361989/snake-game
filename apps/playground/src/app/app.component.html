@@ -1,8 +1,23 @@
+<h1>Snake Game</h1>
 <!--Control bar-->
 <section [formGroup]="form">
-  <input type="number" formControlName="width" />
-  <input type="number" formControlName="height" />
-  <button type="button" (click)="submit()">Submit</button>
+  <div>
+    <input type="number" formControlName="width" />
+    <input type="number" formControlName="height" />
+    <button type="button" (click)="submit()" [disabled]="form.invalid">
+      Submit
+    </button>
+
+    <div class="error-msg-container">
+      <span
+        *ngIf="
+        !!form.controls.width.errors?.['min'] || !!form.controls.height.errors?.['min']
+      "
+      >
+        The value must >= 5
+      </span>
+    </div>
+  </div>
 </section>
 
 <section id="game-container">

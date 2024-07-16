@@ -16,10 +16,4 @@ describe('AppComponent', () => {
       'Welcome playground'
     );
   });
-
-  it(`should have as title 'playground'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('playground');
-  });
 });

@@ -46,7 +46,7 @@ export class SnakeGame extends LitElement {
   @property()
   dimension!: { width: number; height: number };
   @property()
-  speed = 250;
+  speed = 350;
 
   @state()
   private _stage: Stage = Stage.Idle;
@@ -170,6 +170,11 @@ export class SnakeGame extends LitElement {
     window.addEventListener('keydown', this._onKeyDown);
   }
 
+  private stop() {
+    this.intervalId && clearInterval(this.intervalId);
+    window.removeEventListener('keydown', this._onKeyDown);
+  }
+
   private _onKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case 'ArrowUp': {
@@ -191,12 +196,8 @@ export class SnakeGame extends LitElement {
       default:
         break;
     }
+    this._update();
   };
-
-  private stop() {
-    this.intervalId && clearInterval(this.intervalId);
-    window.removeEventListener('keydown', this._onKeyDown);
-  }
 
   private _update() {
     if (!this._snake) return;

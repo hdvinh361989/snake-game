@@ -1,3 +1,6 @@
+h1 {
+  text-align: center;
+}
 section {
   display: flex;
   justify-content: center;
@@ -11,4 +14,10 @@ section {
 input,
 button {
   margin-left: 16px;
+}
+
+.error-msg-container {
+  color: red;
+  text-align: center;
+  margin-top: 16px;
 }
