@@ -1,6 +1,6 @@
 import { customElement, property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, PropertyValues } from 'lit';
 import './cell.component';
 import { Type } from './cell.component';
 import { Snake } from './snake.model';
@@ -42,7 +42,7 @@ export class SnakeGame extends LitElement {
   @property()
   dimension!: { width: number; height: number };
   @property()
-  speed = 350;
+  speed = 1000;
 
   @state()
   private _stage: Stage = Stage.Idle;
@@ -63,6 +63,17 @@ export class SnakeGame extends LitElement {
 
   get isEnd() {
     return this._stage === Stage.End;
+  }
+
+  protected override willUpdate(_changedProperties: PropertyValues) {
+    super.willUpdate(_changedProperties);
+
+    if (
+      _changedProperties.has('dimension') ||
+      _changedProperties.has('speed')
+    ) {
+      this.end();
+    }
   }
 
   protected override render() {
@@ -121,6 +132,15 @@ export class SnakeGame extends LitElement {
     this._cells = this._createNewCells();
     this._bait = this._createNewBait();
     this.run();
+  }
+
+  end() {
+    this.stop();
+    this._stage = Stage.Idle;
+    this._snake = void 0;
+    this._result = void 0;
+    this._cells = void 0;
+    this._bait = void 0;
   }
 
   private _createNewBait() {

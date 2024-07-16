@@ -2,8 +2,15 @@
 <!--Control bar-->
 <section [formGroup]="form">
   <div>
-    <input type="number" formControlName="width" />
-    <input type="number" formControlName="height" />
+    <label for="width">Width</label>
+    <input id="width" type="number" formControlName="width" />
+
+    <label for="height">Height</label>
+    <input id="height" type="number" formControlName="height" />
+
+    <label for="speed">Speed (in millisecond)</label>
+    <input id="speed" type="number" formControlName="speed" />
+
     <button type="button" (click)="submit()" [disabled]="form.invalid">
       Submit
     </button>
@@ -16,10 +23,21 @@
       >
         The value must >= 5
       </span>
+
+      <span
+        *ngIf="
+        !!form.controls.speed.errors?.['min']
+      "
+      >
+        The speed value must >= 200
+      </span>
     </div>
   </div>
 </section>
 
 <section id="game-container">
-  <snake-game [dimension]="submitted"></snake-game>
+  <snake-game
+    [dimension]="submitted?.dimension"
+    [speed]="submitted?.speed"
+  ></snake-game>
 </section>

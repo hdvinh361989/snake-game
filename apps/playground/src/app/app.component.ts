@@ -27,18 +27,23 @@ export class AppComponent implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.min(10)],
     }),
+    speed: new FormControl(1000, {
+      nonNullable: true,
+      validators: [Validators.required, Validators.min(200)],
+    }),
   });
 
-  submitted?: { width: number; height: number };
+  submitted?: { dimension: { width: number; height: number }; speed: number };
 
   ngOnInit(): void {
     this.submit();
   }
 
   submit() {
+    const { width, height, speed } = this.form.value as Record<string, number>;
     this.submitted = {
-      width: this.form.value.width as number,
-      height: this.form.value.height as number,
+      dimension: { width, height },
+      speed,
     };
   }
 }
