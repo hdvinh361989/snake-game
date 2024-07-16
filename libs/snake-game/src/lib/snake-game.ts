@@ -30,10 +30,6 @@ export class SnakeGame extends LitElement {
       display: block;
     }
 
-    h1 {
-      cursor: pointer;
-    }
-
     .row {
       display: flex;
     }
@@ -80,7 +76,10 @@ export class SnakeGame extends LitElement {
   }
 
   private _getIdleTemplate() {
-    return html`<h1 @click="${this.start}">Start</h1>`;
+    return html`
+      <h1>Ready</h1>
+      <button type="button" @click="${this.start}">Begin</button>
+    `;
   }
 
   private _getStartTemplate() {
@@ -88,7 +87,10 @@ export class SnakeGame extends LitElement {
   }
 
   private _getEndTemplate() {
-    return html`<h1 @click="${this.start}">${this._result}</h1>`;
+    return html`
+      <h1>${this._result}</h1>
+      <button type="button" @click="${this.start}">Try again</button>
+    `;
   }
 
   private _getRows() {
@@ -176,27 +178,31 @@ export class SnakeGame extends LitElement {
   }
 
   private _onKeyDown = (e: KeyboardEvent) => {
+    let direction: Direction | undefined = void 0;
     switch (e.key) {
       case 'ArrowUp': {
-        this._snake?.changeDirection(Direction.Up);
+        direction = Direction.Up;
         break;
       }
       case 'ArrowDown': {
-        this._snake?.changeDirection(Direction.Down);
+        direction = Direction.Down;
         break;
       }
       case 'ArrowLeft': {
-        this._snake?.changeDirection(Direction.Left);
+        direction = Direction.Left;
         break;
       }
       case 'ArrowRight': {
-        this._snake?.changeDirection(Direction.Right);
+        direction = Direction.Right;
         break;
       }
       default:
         break;
     }
-    this._update();
+
+    if (!direction) return;
+    const changed = this._snake?.changeDirection(direction);
+    changed && this._update();
   };
 
   private _update() {

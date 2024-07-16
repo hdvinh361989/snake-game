@@ -40,14 +40,11 @@ export class Snake {
     this.playgroundDimension = playgroundDimension;
   }
 
-  changeDirection(direction: Direction) {
-    if (
-      this._direction === direction ||
-      this._direction + 1 === direction ||
-      this._direction - 1 === direction
-    )
-      return;
+  changeDirection(direction: Direction): boolean {
+    if (this._direction + 1 === direction || this._direction - 1 === direction)
+      return false;
     this._direction = direction;
+    return true;
   }
 
   eat(nutrition: number) {
